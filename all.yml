@@ -1,0 +1,169 @@
+---
+# -----------------------------------------------------
+# Namespace for Traefik
+# -----------------------------------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: traefik
+---
+# -----------------------------------------------------
+# Traefik ConfigMap
+# -----------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik-config
+  namespace: traefik
+data:
+  traefik.yml: |
+    entryPoints:
+      web:
+        address: ":80"
+      websecure:
+        address: ":443"
+
+    certificatesResolvers:
+      le:
+        acme:
+          email: "darko@hojnik.de"
+          storage: "/acme/acme.json"
+          httpChallenge:
+            entryPoint: web
+
+    api:
+      dashboard: true
+---
+# -----------------------------------------------------
+# ACME storage
+# -----------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: traefik-acme
+  namespace: traefik
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# -----------------------------------------------------
+# Traefik Deployment
+# -----------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik
+  namespace: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      containers:
+        - name: traefik
+          image: docker.io/traefik:2.11
+          args:
+            - "--providers.kubernetescrd"
+            - "--providers.kubernetesingress"
+            - "--configfile=/etc/traefik/traefik/traefik.yml"
+          ports:
+            - name: web
+              containerPort: 80
+            - name: websecure
+              containerPort: 443
+          volumeMounts:
+            - name: config
+              mountPath: /etc/traefik
+            - name: acme
+              mountPath: /acme
+      volumes:
+        - name: config
+          configMap:
+            name: traefik-config
+        - name: acme
+          persistentVolumeClaim:
+            claimName: traefik-acme
+---
+# -----------------------------------------------------
+# Traefik Service (NodePort for Minikube)
+# -----------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+  namespace: traefik
+spec:
+  type: NodePort
+  ports:
+    - name: web
+      port: 80
+      nodePort: 30080
+      targetPort: 80
+    - name: websecure
+      port: 443
+      nodePort: 30443
+      targetPort: 443
+  selector:
+    app: traefik
+---
+# -----------------------------------------------------
+# Web App Deployment with environment variable
+# -----------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: webapp
+          image: docker.io/dhojnik/lighttpdcgi:latest
+          env:
+            - name: GIT_REPO_URL
+              value: "https://github.com/dhojnik/sample_website.git"
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+---
+# -----------------------------------------------------
+# Headless Service
+# -----------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp
+spec:
+  clusterIP: None
+  selector:
+    app: webapp
+  ports:
+    - port: 80
+      targetPort: 80
+---
+# -----------------------------------------------------
+# Traefik IngressRoute
+# -------------------------
+

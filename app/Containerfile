@@ -1,0 +1,25 @@
+FROM alpine:3.22.2
+
+RUN apk add --no-cache \
+    lighttpd \
+    git \
+    bash \
+    python3
+
+# Create directories
+RUN mkdir -p /var/www/app \
+    && mkdir -p /var/www/cgi-bin
+
+COPY lighttpd.conf /etc/lighttpd/lighttpd.conf
+COPY start.sh /start.sh
+
+RUN chmod +x /start.sh
+
+EXPOSE 80
+
+# Git repo and branch are provided ONLY as environment variables
+ENV GIT_REPO_URL=""
+ENV GIT_BRANCH="main"
+
+CMD ["/start.sh"]
+

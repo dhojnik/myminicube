@@ -1,0 +1,17 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: webapp
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`yeah.webterrorist.net`)
+      kind: Rule
+      services:
+        - name: webapp
+          port: 80
+          nativeLB: false
+  tls:
+    certResolver: le
+

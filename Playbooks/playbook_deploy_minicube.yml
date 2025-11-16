@@ -1,0 +1,48 @@
+---
+- name: Install Minikube with Podman on Fedora
+  hosts: minicube
+  become: yes
+  tasks:
+ 
+    - name: install updates
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest 
+
+    - name: Install dependencies
+      ansible.builtin.dnf:
+        name:
+          - wget
+          - curl
+          - podman
+          - conntrack
+          - socat
+          - jq
+          - bind-utils
+        state: present
+
+    - name: Install Minikube
+      ansible.builtin.get_url:
+        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        dest: /usr/local/bin/minikube
+        mode: 0755
+
+    - name: Check Podman version
+      ansible.builtin.command: podman --version
+      register: podman_version
+      failed_when: podman_version.rc != 0
+      become: False
+
+    - name: Start Minikube with Podman
+      ansible.builtin.command: /usr/local/bin/minikube start --driver=podman --container-runtime=containerd --force-systemd=true
+      environment:
+        MINIKUBE_IN_STYLE: "false"
+      register: minikube_start
+      failed_when: minikube_start.rc != 0
+      become: False
+
+    - name: Confirm Minikube runs propperly
+      ansible.builtin.command: /usr/local/bin/minikube status
+      register: minikube_status
+      failed_when: minikube_status.rc != 0
+      become: False

@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  become: False
+  gather_facts: False
+  vars:
+    myname: "minicube"
+  tasks:
+    - name: Deleting resource group - "{{ myname }}"
+      azure_rm_resourcegroup:
+        name: "{{ myname }}"
+        state: absent
+        force_delete_nonempty: yes
+
+      register: rg
+    - debug:
+        var: rg
+
