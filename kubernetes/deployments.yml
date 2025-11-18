@@ -1,0 +1,156 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "7"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"lighttpdcgi","namespace":"webapp"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"lighttpdcgi"}},"template":{"metadata":{"labels":{"app":"lighttpdcgi"}},"spec":{"containers":[{"env":[{"name":"GIT_REPO_URL","value":"https://github.com/dhojnik/sample_website.git"}],"image":"dhojnik/lighttpdcgi:latest","name":"web","ports":[{"containerPort":80}]}],"dnsConfig":{"nameservers":["8.8.8.8"]},"dnsPolicy":"None"}}}}
+    creationTimestamp: "2025-11-18T18:17:07Z"
+    generation: 7
+    name: lighttpdcgi
+    namespace: webapp
+    resourceVersion: "18062"
+    uid: 188ac1ab-d805-4712-b17f-e2cfc3f0c98d
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: lighttpdcgi
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T19:03:08Z"
+        labels:
+          app: lighttpdcgi
+      spec:
+        containers:
+        - env:
+          - name: GIT_REPO_URL
+            value: https://github.com/dhojnik/sample_website.git
+          image: dhojnik/lighttpdcgi:latest
+          imagePullPolicy: Always
+          name: web
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsConfig:
+          nameservers:
+          - 8.8.8.8
+        dnsPolicy: None
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-11-18T18:59:49Z"
+      lastUpdateTime: "2025-11-18T19:03:12Z"
+      message: ReplicaSet "lighttpdcgi-577f664f54" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2025-11-18T22:04:29Z"
+      lastUpdateTime: "2025-11-18T22:04:29Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 7
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "10"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"traefik","namespace":"webapp"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"traefik"}},"template":{"metadata":{"labels":{"app":"traefik"}},"spec":{"containers":[{"args":["--api.dashboard=true","--providers.kubernetesingress=true","--providers.kubernetescrd=true","--entrypoints.web.address=:80","--entrypoints.websecure.address=:443","--entrypoints.websecure.http.tls=true"],"image":"traefik:v3.0","name":"traefik","ports":[{"containerPort":80,"name":"web"},{"containerPort":443,"name":"websecure"}]}],"serviceAccountName":"traefik-ingress-controller"}}}}
+    creationTimestamp: "2025-11-18T18:02:54Z"
+    generation: 10
+    name: traefik
+    namespace: webapp
+    resourceVersion: "18042"
+    uid: 7856278a-9588-410a-95ad-31c718cc5e63
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: traefik
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T21:46:46Z"
+        labels:
+          app: traefik
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetesingress=true
+          - --providers.kubernetescrd=true
+          - --entrypoints.web.address=:80
+          - --entrypoints.websecure.address=:443
+          - --entrypoints.websecure.http.tls=true
+          image: traefik:v3.0
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-11-18T22:04:15Z"
+      lastUpdateTime: "2025-11-18T22:04:15Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2025-11-18T18:02:54Z"
+      lastUpdateTime: "2025-11-18T22:04:26Z"
+      message: ReplicaSet "traefik-57f654f4fd" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 10
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""

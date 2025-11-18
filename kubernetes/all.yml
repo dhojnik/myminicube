@@ -1,169 +1,1761 @@
----
-# -----------------------------------------------------
-# Namespace for Traefik
-# -----------------------------------------------------
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: traefik
----
-# -----------------------------------------------------
-# Traefik ConfigMap
-# -----------------------------------------------------
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: traefik-config
-  namespace: traefik
-data:
-  traefik.yml: |
-    entryPoints:
-      web:
-        address: ":80"
-      websecure:
-        address: ":443"
-
-    certificatesResolvers:
-      le:
-        acme:
-          email: "darko@hojnik.de"
-          storage: "/acme/acme.json"
-          httpChallenge:
-            entryPoint: web
-
-    api:
-      dashboard: true
----
-# -----------------------------------------------------
-# ACME storage
-# -----------------------------------------------------
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: traefik-acme
-  namespace: traefik
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
-# -----------------------------------------------------
-# Traefik Deployment
-# -----------------------------------------------------
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: traefik
-  namespace: traefik
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/restartedAt: "2025-11-18T19:03:08Z"
+    creationTimestamp: "2025-11-18T19:03:08Z"
+    generateName: lighttpdcgi-577f664f54-
+    generation: 1
+    labels:
+      app: lighttpdcgi
+      pod-template-hash: 577f664f54
+    name: lighttpdcgi-577f664f54-58x68
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: lighttpdcgi-577f664f54
+      uid: dc2bca4b-4ccf-4885-9828-1ed295b94309
+    resourceVersion: "18057"
+    uid: b4381e4d-d7fa-4955-baf0-011c0f6306d6
+  spec:
+    containers:
+    - env:
+      - name: GIT_REPO_URL
+        value: https://github.com/dhojnik/sample_website.git
+      image: dhojnik/lighttpdcgi:latest
+      imagePullPolicy: Always
+      name: web
+      ports:
+      - containerPort: 80
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-gdwsn
+        readOnly: true
+    dnsConfig:
+      nameservers:
+      - 8.8.8.8
+    dnsPolicy: None
+    enableServiceLinks: true
+    nodeName: minikube
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-gdwsn
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T22:04:29Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T19:03:08Z"
+      observedGeneration: 1
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T22:04:29Z"
+      observedGeneration: 1
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T22:04:29Z"
+      observedGeneration: 1
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T19:03:08Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://8a65e7406a94bc462fac23a18811e48a81cf6af8ff510ef6d95e81c82693801a
+      image: docker.io/dhojnik/lighttpdcgi:latest
+      imageID: docker.io/dhojnik/lighttpdcgi@sha256:a033acf10cd859ff357948bdcd1ee36ce86e9b3657972bc85f02c8f0fb9a68fd
+      lastState:
+        terminated:
+          containerID: containerd://a51c9b96f736cb4a4a9efd50de36d58bde7db2098100d777c0484ab96c6bafaf
+          exitCode: 255
+          finishedAt: "2025-11-18T22:03:59Z"
+          reason: Unknown
+          startedAt: "2025-11-18T19:03:10Z"
+      name: web
+      ready: true
+      resources: {}
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2025-11-18T22:04:29Z"
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-gdwsn
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 192.168.49.2
+    hostIPs:
+    - ip: 192.168.49.2
+    observedGeneration: 1
+    phase: Running
+    podIP: 10.244.0.7
+    podIPs:
+    - ip: 10.244.0.7
+    qosClass: BestEffort
+    startTime: "2025-11-18T19:03:08Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2025-11-18T18:31:06Z"
+    generation: 1
+    labels:
+      run: net-test
+    name: net-test
+    namespace: webapp
+    resourceVersion: "18013"
+    uid: d724cee5-4cdc-45c4-8233-73c6554feaf2
+  spec:
+    containers:
+    - args:
+      - sh
+      image: busybox:latest
+      imagePullPolicy: Always
+      name: net-test
+      resources: {}
+      stdin: true
+      stdinOnce: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      tty: true
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-69dq4
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: minikube
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-69dq4
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T22:04:16Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T18:31:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T22:04:16Z"
+      observedGeneration: 1
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T22:04:16Z"
+      observedGeneration: 1
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T18:31:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://60abf8f2610b666a54909b2f7c9c0ee446eb5fec55c655efd8f988114040e207
+      image: docker.io/library/busybox:latest
+      imageID: docker.io/library/busybox@sha256:e3652a00a2fabd16ce889f0aa32c38eec347b997e73bd09e69c962ec7f8732ee
+      lastState:
+        terminated:
+          containerID: containerd://f246ca0e50ca277b8fcc711c80200d9fad8ce07b1cd8a83cc09c7321533d2415
+          exitCode: 255
+          finishedAt: "2025-11-18T22:03:59Z"
+          reason: Unknown
+          startedAt: "2025-11-18T19:07:33Z"
+      name: net-test
+      ready: true
+      resources: {}
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2025-11-18T22:04:15Z"
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-69dq4
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 192.168.49.2
+    hostIPs:
+    - ip: 192.168.49.2
+    observedGeneration: 1
+    phase: Running
+    podIP: 10.244.0.2
+    podIPs:
+    - ip: 10.244.0.2
+    qosClass: BestEffort
+    startTime: "2025-11-18T18:31:06Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/restartedAt: "2025-11-18T21:46:46Z"
+    creationTimestamp: "2025-11-18T21:54:55Z"
+    generateName: traefik-57f654f4fd-
+    generation: 1
+    labels:
       app: traefik
-  template:
-    metadata:
-      labels:
-        app: traefik
-    spec:
-      containers:
-        - name: traefik
-          image: docker.io/traefik:2.11
-          args:
-            - "--providers.kubernetescrd"
-            - "--providers.kubernetesingress"
-            - "--configfile=/etc/traefik/traefik/traefik.yml"
-          ports:
-            - name: web
-              containerPort: 80
-            - name: websecure
-              containerPort: 443
-          volumeMounts:
-            - name: config
-              mountPath: /etc/traefik
-            - name: acme
-              mountPath: /acme
-      volumes:
-        - name: config
-          configMap:
-            name: traefik-config
-        - name: acme
-          persistentVolumeClaim:
-            claimName: traefik-acme
----
-# -----------------------------------------------------
-# Traefik Service (NodePort for Minikube)
-# -----------------------------------------------------
-apiVersion: v1
-kind: Service
-metadata:
-  name: traefik
-  namespace: traefik
-spec:
-  type: NodePort
-  ports:
+      pod-template-hash: 57f654f4fd
+    name: traefik-57f654f4fd-z5mzz
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: traefik-57f654f4fd
+      uid: 08c65323-a3c6-465f-875f-c22936d67249
+    resourceVersion: "18025"
+    uid: 947f8152-3678-4b46-bb56-a1460a6b8586
+  spec:
+    containers:
+    - args:
+      - --api.dashboard=true
+      - --providers.kubernetesingress=true
+      - --providers.kubernetescrd=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls=true
+      image: traefik:v3.0
+      imagePullPolicy: IfNotPresent
+      name: traefik
+      ports:
+      - containerPort: 80
+        name: web
+        protocol: TCP
+      - containerPort: 443
+        name: websecure
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-252dl
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: minikube
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: traefik-ingress-controller
+    serviceAccountName: traefik-ingress-controller
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-252dl
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T22:04:24Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T21:54:55Z"
+      observedGeneration: 1
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T22:04:24Z"
+      observedGeneration: 1
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T22:04:24Z"
+      observedGeneration: 1
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2025-11-18T21:54:55Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://099867e143334ecc28f691fb7fa7c30cc2e2b55473e563b338228d8b8cb2e81b
+      image: docker.io/library/traefik:v3.0
+      imageID: docker.io/library/traefik@sha256:a208c74fd80a566d4ea376053bff73d31616d7af3f1465a7747b8b89ee34d97e
+      lastState: {}
+      name: traefik
+      ready: true
+      resources: {}
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2025-11-18T22:04:24Z"
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-252dl
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 192.168.49.2
+    hostIPs:
+    - ip: 192.168.49.2
+    observedGeneration: 1
+    phase: Running
+    podIP: 10.244.0.3
+    podIPs:
+    - ip: 10.244.0.3
+    qosClass: BestEffort
+    startTime: "2025-11-18T21:54:55Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"lighttpdcgi","namespace":"webapp"},"spec":{"ports":[{"port":80,"targetPort":80}],"selector":{"app":"lighttpdcgi"},"type":"ClusterIP"}}
+    creationTimestamp: "2025-11-18T18:17:07Z"
+    name: lighttpdcgi
+    namespace: webapp
+    resourceVersion: "5800"
+    uid: de32c19f-a90e-44fa-b217-9f7601f477ea
+  spec:
+    clusterIP: 10.96.131.108
+    clusterIPs:
+    - 10.96.131.108
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+    selector:
+      app: lighttpdcgi
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"traefik","namespace":"webapp"},"spec":{"ports":[{"name":"web","nodePort":30080,"port":80},{"name":"websecure","nodePort":30443,"port":443}],"selector":{"app":"traefik"},"type":"NodePort"}}
+    creationTimestamp: "2025-11-18T18:02:54Z"
+    name: traefik
+    namespace: webapp
+    resourceVersion: "17621"
+    uid: 2bc59153-4ebf-4d15-95fe-e9a04c3c336e
+  spec:
+    clusterIP: 10.111.46.54
+    clusterIPs:
+    - 10.111.46.54
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
     - name: web
-      port: 80
       nodePort: 30080
+      port: 80
+      protocol: TCP
       targetPort: 80
     - name: websecure
-      port: 443
       nodePort: 30443
+      port: 443
+      protocol: TCP
       targetPort: 443
-  selector:
-    app: traefik
----
-# -----------------------------------------------------
-# Web App Deployment with environment variable
-# -----------------------------------------------------
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: webapp
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: webapp
-  template:
-    metadata:
-      labels:
-        app: webapp
-    spec:
-      containers:
-        - name: webapp
-          image: docker.io/dhojnik/lighttpdcgi:latest
-          env:
-            - name: GIT_REPO_URL
-              value: "https://github.com/dhojnik/sample_website.git"
+    selector:
+      app: traefik
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "7"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"lighttpdcgi","namespace":"webapp"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"lighttpdcgi"}},"template":{"metadata":{"labels":{"app":"lighttpdcgi"}},"spec":{"containers":[{"env":[{"name":"GIT_REPO_URL","value":"https://github.com/dhojnik/sample_website.git"}],"image":"dhojnik/lighttpdcgi:latest","name":"web","ports":[{"containerPort":80}]}],"dnsConfig":{"nameservers":["8.8.8.8"]},"dnsPolicy":"None"}}}}
+    creationTimestamp: "2025-11-18T18:17:07Z"
+    generation: 7
+    name: lighttpdcgi
+    namespace: webapp
+    resourceVersion: "18062"
+    uid: 188ac1ab-d805-4712-b17f-e2cfc3f0c98d
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: lighttpdcgi
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T19:03:08Z"
+        labels:
+          app: lighttpdcgi
+      spec:
+        containers:
+        - env:
+          - name: GIT_REPO_URL
+            value: https://github.com/dhojnik/sample_website.git
+          image: dhojnik/lighttpdcgi:latest
+          imagePullPolicy: Always
+          name: web
           ports:
-            - containerPort: 80
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 80
----
-# -----------------------------------------------------
-# Headless Service
-# -----------------------------------------------------
-apiVersion: v1
-kind: Service
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsConfig:
+          nameservers:
+          - 8.8.8.8
+        dnsPolicy: None
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-11-18T18:59:49Z"
+      lastUpdateTime: "2025-11-18T19:03:12Z"
+      message: ReplicaSet "lighttpdcgi-577f664f54" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2025-11-18T22:04:29Z"
+      lastUpdateTime: "2025-11-18T22:04:29Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 7
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "10"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"traefik","namespace":"webapp"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"traefik"}},"template":{"metadata":{"labels":{"app":"traefik"}},"spec":{"containers":[{"args":["--api.dashboard=true","--providers.kubernetesingress=true","--providers.kubernetescrd=true","--entrypoints.web.address=:80","--entrypoints.websecure.address=:443","--entrypoints.websecure.http.tls=true"],"image":"traefik:v3.0","name":"traefik","ports":[{"containerPort":80,"name":"web"},{"containerPort":443,"name":"websecure"}]}],"serviceAccountName":"traefik-ingress-controller"}}}}
+    creationTimestamp: "2025-11-18T18:02:54Z"
+    generation: 10
+    name: traefik
+    namespace: webapp
+    resourceVersion: "18042"
+    uid: 7856278a-9588-410a-95ad-31c718cc5e63
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: traefik
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T21:46:46Z"
+        labels:
+          app: traefik
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetesingress=true
+          - --providers.kubernetescrd=true
+          - --entrypoints.web.address=:80
+          - --entrypoints.websecure.address=:443
+          - --entrypoints.websecure.http.tls=true
+          image: traefik:v3.0
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2025-11-18T22:04:15Z"
+      lastUpdateTime: "2025-11-18T22:04:15Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2025-11-18T18:02:54Z"
+      lastUpdateTime: "2025-11-18T22:04:26Z"
+      message: ReplicaSet "traefik-57f654f4fd" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 10
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "7"
+    creationTimestamp: "2025-11-18T19:03:08Z"
+    generation: 2
+    labels:
+      app: lighttpdcgi
+      pod-template-hash: 577f664f54
+    name: lighttpdcgi-577f664f54
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: lighttpdcgi
+      uid: 188ac1ab-d805-4712-b17f-e2cfc3f0c98d
+    resourceVersion: "18060"
+    uid: dc2bca4b-4ccf-4885-9828-1ed295b94309
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: lighttpdcgi
+        pod-template-hash: 577f664f54
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T19:03:08Z"
+        labels:
+          app: lighttpdcgi
+          pod-template-hash: 577f664f54
+      spec:
+        containers:
+        - env:
+          - name: GIT_REPO_URL
+            value: https://github.com/dhojnik/sample_website.git
+          image: dhojnik/lighttpdcgi:latest
+          imagePullPolicy: Always
+          name: web
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsConfig:
+          nameservers:
+          - 8.8.8.8
+        dnsPolicy: None
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 2
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "6"
+    creationTimestamp: "2025-11-18T18:59:49Z"
+    generation: 3
+    labels:
+      app: lighttpdcgi
+      pod-template-hash: 5b57c5b6c9
+    name: lighttpdcgi-5b57c5b6c9
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: lighttpdcgi
+      uid: 188ac1ab-d805-4712-b17f-e2cfc3f0c98d
+    resourceVersion: "8817"
+    uid: cce0aa97-933a-4a00-a57e-2e97cd085337
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: lighttpdcgi
+        pod-template-hash: 5b57c5b6c9
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T18:59:49Z"
+        labels:
+          app: lighttpdcgi
+          pod-template-hash: 5b57c5b6c9
+      spec:
+        containers:
+        - env:
+          - name: GIT_REPO_URL
+            value: https://github.com/dhojnik/sample_website.git
+          image: dhojnik/lighttpdcgi:latest
+          imagePullPolicy: Always
+          name: web
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsConfig:
+          nameservers:
+          - 8.8.8.8
+        dnsPolicy: None
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "5"
+    creationTimestamp: "2025-11-18T18:41:54Z"
+    generation: 3
+    labels:
+      app: lighttpdcgi
+      pod-template-hash: 5b8b7777f8
+    name: lighttpdcgi-5b8b7777f8
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: lighttpdcgi
+      uid: 188ac1ab-d805-4712-b17f-e2cfc3f0c98d
+    resourceVersion: "8781"
+    uid: 4de256fd-b41d-44b9-bf9d-5ed0e253fcf6
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: lighttpdcgi
+        pod-template-hash: 5b8b7777f8
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T18:41:54Z"
+        labels:
+          app: lighttpdcgi
+          pod-template-hash: 5b8b7777f8
+      spec:
+        containers:
+        - env:
+          - name: GIT_REPO_URL
+            value: https://github.com/dhojnik/sample_website.git
+          image: dhojnik/lighttpdcgi:latest
+          imagePullPolicy: Always
+          name: web
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsConfig:
+          nameservers:
+          - 8.8.8.8
+        dnsPolicy: None
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-11-18T18:17:07Z"
+    generation: 2
+    labels:
+      app: lighttpdcgi
+      pod-template-hash: 6644b55584
+    name: lighttpdcgi-6644b55584
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: lighttpdcgi
+      uid: 188ac1ab-d805-4712-b17f-e2cfc3f0c98d
+    resourceVersion: "6963"
+    uid: aa4950cf-9ff2-4aba-aeb3-3a3c3c1cfe0a
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: lighttpdcgi
+        pod-template-hash: 6644b55584
+    template:
+      metadata:
+        labels:
+          app: lighttpdcgi
+          pod-template-hash: 6644b55584
+      spec:
+        containers:
+        - env:
+          - name: GIT_REPO_URL
+            value: https://github.com/dhojnik/sample_website.git
+          image: dhojnik/lighttpdcgi:latest
+          imagePullPolicy: Always
+          name: web
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsConfig:
+          nameservers:
+          - 8.8.8.8
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "4"
+    creationTimestamp: "2025-11-18T18:39:27Z"
+    generation: 3
+    labels:
+      app: lighttpdcgi
+      pod-template-hash: 79f6ff5ffc
+    name: lighttpdcgi-79f6ff5ffc
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: lighttpdcgi
+      uid: 188ac1ab-d805-4712-b17f-e2cfc3f0c98d
+    resourceVersion: "8547"
+    uid: fab65c1f-13a7-4cc8-b0cb-91292f6d8329
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: lighttpdcgi
+        pod-template-hash: 79f6ff5ffc
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T18:39:27Z"
+        labels:
+          app: lighttpdcgi
+          pod-template-hash: 79f6ff5ffc
+      spec:
+        containers:
+        - env:
+          - name: GIT_REPO_URL
+            value: https://github.com/dhojnik/sample_website.git
+          image: dhojnik/lighttpdcgi:latest
+          imagePullPolicy: Always
+          name: web
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsConfig:
+          nameservers:
+          - 8.8.8.8
+        dnsPolicy: None
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "3"
+    creationTimestamp: "2025-11-18T18:36:03Z"
+    generation: 3
+    labels:
+      app: lighttpdcgi
+      pod-template-hash: 858f648fd8
+    name: lighttpdcgi-858f648fd8
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: lighttpdcgi
+      uid: 188ac1ab-d805-4712-b17f-e2cfc3f0c98d
+    resourceVersion: "7425"
+    uid: dfa09cb9-34ce-4e35-9e62-bf2ee9fe8a54
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: lighttpdcgi
+        pod-template-hash: 858f648fd8
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T18:36:03Z"
+        labels:
+          app: lighttpdcgi
+          pod-template-hash: 858f648fd8
+      spec:
+        containers:
+        - env:
+          - name: GIT_REPO_URL
+            value: https://github.com/dhojnik/sample_website.git
+          image: dhojnik/lighttpdcgi:latest
+          imagePullPolicy: Always
+          name: web
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsConfig:
+          nameservers:
+          - 8.8.8.8
+        dnsPolicy: None
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "2"
+    creationTimestamp: "2025-11-18T18:34:24Z"
+    generation: 2
+    labels:
+      app: lighttpdcgi
+      pod-template-hash: 97d9c7674
+    name: lighttpdcgi-97d9c7674
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: lighttpdcgi
+      uid: 188ac1ab-d805-4712-b17f-e2cfc3f0c98d
+    resourceVersion: "7237"
+    uid: 60878775-1da0-48ee-818a-7a0ebc51c038
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: lighttpdcgi
+        pod-template-hash: 97d9c7674
+    template:
+      metadata:
+        labels:
+          app: lighttpdcgi
+          pod-template-hash: 97d9c7674
+      spec:
+        containers:
+        - env:
+          - name: GIT_REPO_URL
+            value: https://github.com/dhojnik/sample_website.git
+          image: dhojnik/lighttpdcgi:latest
+          imagePullPolicy: Always
+          name: web
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsConfig:
+          nameservers:
+          - 8.8.8.8
+        dnsPolicy: None
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "3"
+    creationTimestamp: "2025-11-18T19:51:47Z"
+    generation: 2
+    labels:
+      app: traefik
+      pod-template-hash: 546f7f6567
+    name: traefik-546f7f6567
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "13726"
+    uid: ef64dc43-7c43-48fd-9ea3-a703facb1d85
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: 546f7f6567
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T19:51:47Z"
+        labels:
+          app: traefik
+          pod-template-hash: 546f7f6567
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetesingress=true
+          - --entryPoints.web.address=:80
+          - --entryPoints.websecure.address=:443
+          image: traefik:3.6
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          - containerPort: 8080
+            name: admin
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "10"
+    creationTimestamp: "2025-11-18T21:54:55Z"
+    generation: 1
+    labels:
+      app: traefik
+      pod-template-hash: 57f654f4fd
+    name: traefik-57f654f4fd
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "18028"
+    uid: 08c65323-a3c6-465f-875f-c22936d67249
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: 57f654f4fd
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T21:46:46Z"
+        labels:
+          app: traefik
+          pod-template-hash: 57f654f4fd
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetesingress=true
+          - --providers.kubernetescrd=true
+          - --entrypoints.web.address=:80
+          - --entrypoints.websecure.address=:443
+          - --entrypoints.websecure.http.tls=true
+          image: traefik:v3.0
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "4"
+    creationTimestamp: "2025-11-18T20:41:52Z"
+    generation: 2
+    labels:
+      app: traefik
+      pod-template-hash: 57fdd8ccbc
+    name: traefik-57fdd8ccbc
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "15899"
+    uid: e97a607f-8e0d-4915-b918-d719c8f9ed47
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: 57fdd8ccbc
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T19:51:47Z"
+        labels:
+          app: traefik
+          pod-template-hash: 57fdd8ccbc
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetescrd=true
+          - --providers.kubernetesingress=true
+          - --entryPoints.web.address=:80
+          - --entryPoints.websecure.address=:443
+          image: traefik:3.6
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          - containerPort: 8080
+            name: admin
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "2"
+    creationTimestamp: "2025-11-18T19:18:02Z"
+    generation: 2
+    labels:
+      app: traefik
+      pod-template-hash: 5ff686cd57
+    name: traefik-5ff686cd57
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "11270"
+    uid: d0449c6b-3d22-499f-b6c6-0f9c578834f0
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: 5ff686cd57
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T19:18:02Z"
+        labels:
+          app: traefik
+          pod-template-hash: 5ff686cd57
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetesingress=true
+          - --entryPoints.web.address=:80
+          - --entryPoints.websecure.address=:443
+          image: traefik:3.6
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          - containerPort: 8080
+            name: admin
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "7"
+    creationTimestamp: "2025-11-18T21:24:01Z"
+    generation: 2
+    labels:
+      app: traefik
+      pod-template-hash: 6744f75595
+    name: traefik-6744f75595
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "16696"
+    uid: f0a1c40f-4b07-4e19-b571-cb4bd14f2eb0
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: 6744f75595
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T21:24:01Z"
+        labels:
+          app: traefik
+          pod-template-hash: 6744f75595
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetescrd=true
+          - --providers.kubernetesingress=true
+          - --entryPoints.web.address=:80
+          - --entryPoints.websecure.address=:443
+          - --providers.kubernetesingress.ingressclass=traefik
+          image: traefik:3.6
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          - containerPort: 8080
+            name: admin
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "9"
+    creationTimestamp: "2025-11-18T21:46:46Z"
+    generation: 2
+    labels:
+      app: traefik
+      pod-template-hash: 75cf598dcd
+    name: traefik-75cf598dcd
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "18040"
+    uid: 221e0b9b-2751-4fd1-9823-db578d4e5650
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: 75cf598dcd
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T21:46:46Z"
+        labels:
+          app: traefik
+          pod-template-hash: 75cf598dcd
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetescrd=true
+          - --providers.kubernetesingress=true
+          - --entryPoints.web.address=:80
+          - --entryPoints.websecure.address=:443
+          - --providers.kubernetesingress.ingressclass=traefik
+          image: traefik:3.6
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          - containerPort: 8080
+            name: admin
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "6"
+    creationTimestamp: "2025-11-18T21:23:30Z"
+    generation: 2
+    labels:
+      app: traefik
+      pod-template-hash: 768b577995
+    name: traefik-768b577995
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "16057"
+    uid: 96aa517c-4e56-4447-9901-64dc113c4037
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: 768b577995
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T21:22:14Z"
+        labels:
+          app: traefik
+          pod-template-hash: 768b577995
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetescrd=true
+          - --providers.kubernetesingress=true
+          - --entryPoints.web.address=:80
+          - --entryPoints.websecure.address=:443
+          - --providers.kubernetesingress.ingressclass=traefik
+          image: traefik:3.6
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          - containerPort: 8080
+            name: admin
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2025-11-18T18:02:54Z"
+    generation: 2
+    labels:
+      app: traefik
+      pod-template-hash: 96845dff5
+    name: traefik-96845dff5
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "9591"
+    uid: b3ecf70d-2b1a-4cea-9d5a-b90ae7dc9967
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: 96845dff5
+    template:
+      metadata:
+        labels:
+          app: traefik
+          pod-template-hash: 96845dff5
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetesingress=true
+          - --entryPoints.web.address=:80
+          - --entryPoints.websecure.address=:443
+          image: traefik:3.6
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          - containerPort: 8080
+            name: admin
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "8"
+    creationTimestamp: "2025-11-18T21:36:33Z"
+    generation: 2
+    labels:
+      app: traefik
+      pod-template-hash: cdf6ddc67
+    name: traefik-cdf6ddc67
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "17225"
+    uid: 4c770418-835d-4d57-8aad-24fa5e620d9c
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: cdf6ddc67
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T21:36:33Z"
+        labels:
+          app: traefik
+          pod-template-hash: cdf6ddc67
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetescrd=true
+          - --providers.kubernetesingress=true
+          - --entryPoints.web.address=:80
+          - --entryPoints.websecure.address=:443
+          - --providers.kubernetesingress.ingressclass=traefik
+          image: traefik:3.6
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          - containerPort: 8080
+            name: admin
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "5"
+    creationTimestamp: "2025-11-18T21:22:14Z"
+    generation: 2
+    labels:
+      app: traefik
+      pod-template-hash: d4476c556
+    name: traefik-d4476c556
+    namespace: webapp
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: traefik
+      uid: 7856278a-9588-410a-95ad-31c718cc5e63
+    resourceVersion: "15998"
+    uid: 8668a19c-f650-460e-94be-9aa20cbc164c
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: traefik
+        pod-template-hash: d4476c556
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2025-11-18T21:22:14Z"
+        labels:
+          app: traefik
+          pod-template-hash: d4476c556
+      spec:
+        containers:
+        - args:
+          - --api.dashboard=true
+          - --providers.kubernetescrd=true
+          - --providers.kubernetesingress=true
+          - --entryPoints.web.address=:80
+          - --entryPoints.websecure.address=:443
+          image: traefik:3.6
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+          - containerPort: 80
+            name: web
+            protocol: TCP
+          - containerPort: 443
+            name: websecure
+            protocol: TCP
+          - containerPort: 8080
+            name: admin
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: traefik-ingress-controller
+        serviceAccountName: traefik-ingress-controller
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+kind: List
 metadata:
-  name: webapp
-spec:
-  clusterIP: None
-  selector:
-    app: webapp
-  ports:
-    - port: 80
-      targetPort: 80
----
-# -----------------------------------------------------
-# Traefik IngressRoute
-# -------------------------
-
+  resourceVersion: ""

@@ -5,20 +5,30 @@ metadata:
   namespace: traefik
 data:
   traefik.yml: |
+    api:
+      dashboard: true
+
     entryPoints:
       web:
         address: ":80"
+        http:
+          redirections:
+            entryPoint:
+              to: websecure
+              scheme: https
+
       websecure:
         address: ":443"
 
+    providers:
+      kubernetesCRD: {}
+      kubernetesIngress: {}
+
     certificatesResolvers:
-      le:
+      letsencrypt:
         acme:
           email: "darko@hojnik.de"
-          storage: "/acme/acme.json"
+          storage: "/letsencrypt/acme.json"
           httpChallenge:
             entryPoint: web
-
-    api:
-      dashboard: true
 

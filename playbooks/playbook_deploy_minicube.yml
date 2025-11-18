@@ -1,0 +1,92 @@
+---
+- name: Install Minikube with Podman on Fedora
+  hosts: minicube
+  become: yes
+  tasks:
+ 
+    - name: install updates
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest 
+
+    - name: Install dependencies
+      ansible.builtin.dnf:
+        name:
+          - wget
+          - curl
+          - podman
+          - podman-docker
+          - helm
+          - bind-utils
+          - git
+          - unzip
+          - firewalld
+          - net-tools
+          - arp-scan
+          - nmap
+          - lynx
+        state: present
+
+    - name: Ensure firewalld is installed
+      ansible.builtin.package:
+        name: firewalld
+        state: present
+
+    - name: Ensure firewalld service is enabled and started
+      ansible.builtin.service:
+        name: firewalld
+        enabled: yes
+        state: started
+
+    - name: Enable masquerading
+      ansible.posix.firewalld:
+        masquerade: yes
+        permanent: yes
+        state: enabled
+
+    - name: Forward port 80 to 192.168.49.2:30080
+      ansible.posix.firewalld:
+        rich_rule: 'rule family="ipv4" forward-port port="80" protocol="tcp" to-addr="192.168.49.2" to-port="30080"'
+        permanent: yes
+        state: enabled
+
+    - name: Forward port 443 to 192.168.49.2:30443
+      ansible.posix.firewalld:
+        rich_rule: 'rule family="ipv4" forward-port port="443" protocol="tcp" to-addr="192.168.49.2" to-port="30443"'
+        permanent: yes
+        state: enabled
+
+    - name: Reload firewalld
+      ansible.builtin.command: firewall-cmd --reload
+
+    - name: Get minikube
+      ansible.builtin.get_url:
+        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        dest: /usr/local/bin/minikube
+        mode: 0755
+
+    - name: Get kubctl
+      ansible.builtin.get_url:
+        url: https://dl.k8s.io/release/v1.34.2/bin/linux/amd64/kubectl
+        dest: /usr/local/bin/kubctl
+        mode: 0755
+
+    - name: Check Podman version
+      ansible.builtin.command: podman --version
+      register: podman_version
+      failed_when: podman_version.rc != 0
+      become: False
+
+    - name: Start Minikube with Podman
+      ansible.builtin.command: /usr/local/bin/minikube start --driver=podman --container-runtime=containerd --force-systemd=true
+      environment:
+        MINIKUBE_IN_STYLE: "false"
+      register: minikube_start
+      failed_when: minikube_start.rc != 0
+      become: False
+
+    - name: Confirm Minikube runs propperly
+      ansible.builtin.command: /usr/local/bin/minikube status
+      register: minikube_status
+      failed_when: minikube_status.rc != 0
+      become: False
