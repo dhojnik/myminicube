@@ -26,7 +26,7 @@ and becomes available at:
 
 ---
 
-# 🚀 Architecture
+# Architecture
 
 ```text
 Azure VM (Fedora 43)
@@ -84,7 +84,7 @@ All versions are tested and compatible with Python **≤ 3.10**.
 
 ---
 
-# 🔧 Azure VM Provisioning
+# Azure VM Provisioning
 
 The Azure VM is created using:
 
@@ -178,7 +178,7 @@ Traefik performs:
 
 ---
 
-# 🔒 HTTPS with Let's Encrypt
+# HTTPS with Let's Encrypt
 
 Traefik uses Let's Encrypt to generate valid HTTPS certificates.
 
@@ -205,5 +205,5 @@ This removes:
 
 #  License
 
-MIT License  
+BSD License  
 © 2025
