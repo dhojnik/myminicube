@@ -1,0 +1,17 @@
+additionalArguments:
+  - "--api.dashboard=false"
+  - "--entrypoints.web.address=:80"
+  - "--entrypoints.websecure.address=:443"
+  - "--certificatesresolvers.le.acme.email=john.due@example.com"
+  - "--certificatesresolvers.le.acme.storage=/data/acme.json"
+  - "--certificatesresolvers.le.acme.tlschallenge=true"
+
+ports:
+  web:
+    expose: true
+  websecure:
+    expose: true
+
+ingressClass:
+  enabled: true
+  isDefaultClass: false

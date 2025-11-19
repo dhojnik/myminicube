@@ -1,7 +1,0 @@
----
-collections:
-  - name: azure
-    version: v3.11.0
-    source: https://github.com/ansible-collections/azure.git
-    type: git
-

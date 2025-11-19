@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lighttpdcgi
+  namespace: webapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: lighttpdcgi
+  template:
+    metadata:
+      labels:
+        app: lighttpdcgi
+    spec:
+      containers:
+        - name: lighttpd
+          image: YOUR_IMAGE_HERE
+          ports:
+            - containerPort: 80

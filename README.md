@@ -6,7 +6,7 @@ The entire stack runs **rootless** using Podman and Containerd, provides ingress
 The example website is hosted here:  
 https://github.com/dhojnik/sample_website  
 and becomes available at:  
-https://yeah.webterrorist.net
+https://yeah.example.com
 
 ---
 
@@ -184,7 +184,7 @@ Traefik uses Let's Encrypt to generate valid HTTPS certificates.
 
 The service becomes available at:
 
-**https://yeah.webterrorist.net**
+**https://yeah.example.com**
 
 ---
 
