@@ -4,9 +4,9 @@ This repository automates the deployment of a full Minikube environment on an Az
 The entire stack runs **rootless** using Podman and Containerd, provides ingress and load balancing through **Traefik 3.6**, and is fully deployed via **Ansible**.
 
 The example website is hosted here:  
-➡ https://github.com/dhojnik/sample_website  
+https://github.com/dhojnik/sample_website  
 and becomes available at:  
-➡ https://yeah.webterrorist.net
+https://yeah.webterrorist.net
 
 ---
 
@@ -102,7 +102,7 @@ This playbook manages:
 
 ---
 
-# 🐧 Deploying Minikube on the VM
+# Deploying Minikube on the VM
 
 Once the VM is up, Minikube is installed with:
 
@@ -184,7 +184,7 @@ Traefik uses Let's Encrypt to generate valid HTTPS certificates.
 
 The service becomes available at:
 
-➡ **https://yeah.webterrorist.net**
+**https://yeah.webterrorist.net**
 
 ---
 
