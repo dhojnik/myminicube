@@ -74,7 +74,7 @@ Azure SDK modules are installed via `requirements.txt` and must run under **Pyth
 
 ```bash
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r azure-requirements.txt
 pip install ansible
 ```
 
@@ -134,7 +134,7 @@ Each container loads its website content dynamically from a Git repository using
 
 ```yaml
 env:
-  - name: WEBSITE_REPO
+  - name: GIT_REPO_URL
     value: "https://github.com/dhojnik/sample_website"
 ```
 
