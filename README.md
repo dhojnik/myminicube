@@ -15,12 +15,13 @@ https://yeah.example.com
 - Azure provisioning using **Python 3.10** and Azure SDK  
 - Deployment automation with Ansible  
 - Fedora 43 VM running:
-  - Rootless Podman  
+  - Rootless Podman where runs minicube inside  
   - Rootless Containerd  
-  - slip4netns network  
+  - slip4netns network to the podman conatainer with minicube  
 - Minikube cluster  
 - 3 webserver containers with Kubernetes health probes  
 - Traefik 3.6 reverse proxy + load balancer  
+- Healthchecks with kubernetes for Traefik  
 - Let's Encrypt TLS certificate automation  
 - Website content dynamically loaded from a Git repo via environment variable  
 
@@ -107,6 +108,9 @@ This playbook manages:
 Once the VM is up, Minikube is installed with:
 
 ```bash
+az login
+```
+```bash
 ansible-playbook playbook_deploy_minicube.yml
 ```
 
@@ -127,6 +131,74 @@ This playbook performs:
   - Let's Encrypt certificates  
 
 ---
+
+# Deploying Traefik and the webapp
+
+Once the VM is up, Minikube is installed with:
+
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
+
+
+```bash
+ansible-playbook playbook_deploy_minicube.yml
+```
+
+This playbook performs:
+
+
+- a basic install about tools and minicube
+- initial firewall configuration
+
+- Rootless user setup  
+- Podman + Containerd rootless configuration  
+- slip4netns networking  
+- Installation and start of Minikube  
+- Deployment of:
+  - Webserver containers  
+  - Kubernetes manifests  
+  - Traefik 3.6  
+  - Let's Encrypt certificates  
+
+---
+
+# Deploying Traefik and the webapp
+Deploy the apps with :
+
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
+```bash
+kubectl appl -f
+```
 
 # Website Loading from Git Repository
 
